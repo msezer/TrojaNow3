@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">TrojaNow</string>
+
+
+    <string name="action_settings">Settings</string>
+    <string name="button_login_r">Login</string>
+    <string name="text_email_r">Your Email</string>
+    <string name="title_activity_main">Main</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="text_messages_r">Your messages...</string>
+    <string name="button_signout_r">Sign Out</string>
+    <string name="title_activity_password">Password</string>
+    <string name="button_back_resetp_r">Back</string>
+    <string name="button_forgot_password_r">Forgot Password</string>
+    <string name="title_activity_profile">Profile</string>
+    <string name="text_profile_r">My Profile</string>
+    <string name="button_profile_back_r">Back</string>
+    <string name="title_activity_compose">Compose</string>
+    <string name="button_sendmessage_r">Send</string>
+    <string name="title_activity_environment">Environment</string>
+    <string name="text_environment_r">Share Your</string>
+    <string name="button_env_share_r">Share</string>
+    <string name="button_addpicture_r">button_addpicture_r</string>
+    <string name="button_addlocation_r">button_addlocation_r</string>
+    <string name="title_activity_search">Search</string>
+
+    <string name="button_back_search_r">Back</string>
+    <string name="button_Search_r">Search</string>
+
+    <string name="search_prompt">Choose one</string>
+    <string-array name="search_arrays">
+        <item>Name</item>
+        <item>Email</item>
+        <item>Phone</item>
+        <item>Username</item>
+        <item>Address</item>
+    </string-array>
+    <string name="title_activity_register">Register</string>
+
+</resources>
