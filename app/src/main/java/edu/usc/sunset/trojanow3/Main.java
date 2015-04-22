@@ -1,13 +1,16 @@
 package edu.usc.sunset.trojanow3;
 
+import android.content.Context;
 import android.location.LocationListener;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import android.content.Intent;
 import android.view.View;
+import android.widget.Toast;
 
 public class Main extends ActionBarActivity {
 
@@ -17,21 +20,36 @@ public class Main extends ActionBarActivity {
         setContentView(R.layout.activity_main);
     }
 
-    // Used in order to get back to the profile activity
-    public void onClickProfile(View view){
-        Intent i = new Intent(this, Profile.class);
-        startActivity(i);
-    }
-
-    // Used in order to get back to the compose activity
+    // Link to the compose activity
     public void onClickCompose(View view){
         Intent i = new Intent(this, Compose.class);
         startActivity(i);
     }
 
-    // Used in order to get back to the search activity
+    // Link to the search activity
      public void onClickSearch(View view){
         Intent i = new Intent(this, Search.class);
+        startActivity(i);
+    }
+
+    // Used in order to get back to the profile activity
+    public void onClickProfile(View view){
+        Intent i = new Intent(this, ProfilePage.class);
+        startActivity(i);
+    }
+
+    // Used in order to get back to the search activity
+    // TO.DO. ADD Sign Out Process here
+    public void onClickSignOut(View view){
+        Context context = getApplicationContext();
+        CharSequence text = "Signing out in process...";
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.show();
+
+        // Link to Login Page after sign out process
+        Intent i = new Intent(this, Login.class);
         startActivity(i);
     }
 

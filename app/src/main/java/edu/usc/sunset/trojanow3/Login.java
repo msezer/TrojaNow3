@@ -3,19 +3,11 @@ package edu.usc.sunset.trojanow3;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Intent;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -24,7 +16,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 
 public class Login extends ActionBarActivity {
 
@@ -36,18 +27,10 @@ public class Login extends ActionBarActivity {
         emailFunc = (EditText) findViewById(R.id.login_email);
     }
 
-    //EditText emailFunc = (EditText) findViewById(R.id.login_email);
-    //public final static String EXTRA_MESSAGE = "E.MESAAGE_";
-
     // Login Successful, to main page
     public void onClickLoginProcess(View view) {
-        //Intent i = new Intent(this, Main.class);
-        //startActivity(i);
-
-        Log.d("OnClicktoLOGIN", "Http req sent");
-        String urlString;
-        urlString = "http://hmkcode.com/examples/index.php";
-        new CallAPI().execute(urlString);
+        Intent i = new Intent(this, Main.class);
+        startActivity(i);
     }
 
     // To reset password page
@@ -122,13 +105,13 @@ public class Login extends ActionBarActivity {
             //intent.putExtra(EXTRA_MESSAGE, result);
             //startActivity(intent);
 
-            emailFunc.setText(result);
+            //emailFunc.setText(result);
         }
 
     } // end CallAPI
 
     // verifyEmail method should be called after login process
-    public void verifyEmail(View view) {
+    //public void verifyEmail(View view) {
         //EditText emailEditText = (EditText) findViewById(R.id.login_email);
         //String email = emailEditText.getText().toString();
         //EditText passwordEditText = (EditText) findViewById(R.id.login_password);
@@ -142,5 +125,5 @@ public class Login extends ActionBarActivity {
             */
             //new CallAPI().execute(urlString);
         //}
-    }
+    //}
 }
