@@ -41,6 +41,10 @@ public class Main extends ActionBarActivity {
     // Used in order to get back to the search activity
     // TO.DO. ADD Sign Out Process here
     public void onClickSignOut(View view){
+
+        // Sign Out Process
+
+        // Show Toast Message
         Context context = getApplicationContext();
         CharSequence text = "Signing out in process...";
         int duration = Toast.LENGTH_SHORT;
