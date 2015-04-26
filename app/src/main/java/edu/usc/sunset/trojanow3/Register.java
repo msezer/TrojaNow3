@@ -14,9 +14,18 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import static junit.framework.Assert.assertEquals;
@@ -42,12 +51,7 @@ public class Register extends ActionBarActivity {
         Intent i = new Intent(this, Main.class);
         startActivity(i);
 
-        /*
-        String urlString;
-        urlString = "http://104.32.183.230:8080/trojanow-web/Profile";
-        Log.d("OnClicktoREGISTER", "Register Post Sent");
-        new HttpRegisterPost().execute(urlString);
-        */
+        new HttpRegisterPost().execute("test");
     }
 
     // Link to login page
@@ -75,6 +79,59 @@ public class Register extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private static class HttpRegisterPost extends AsyncTask<String, String, String>{
+
+        private static String toString(final InputStream pInputStream) throws IOException{
+
+            final StringBuilder myStringBuilder = new StringBuilder();
+
+            final byte[] myBuffer = new byte[1024];
+
+            int myNumberOfBytesRead = pInputStream.read(myBuffer);
+
+            while(myNumberOfBytesRead != -1){
+                myStringBuilder.append(new String(myBuffer).substring(0, myNumberOfBytesRead));
+
+                myNumberOfBytesRead = pInputStream.read(myBuffer);
+            }
+
+            return myStringBuilder.toString();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            try {
+                String data = URLEncoder.encode("fullname", "UTF-8")
+                        + "=" + URLEncoder.encode("TEST_FULLNAME", "UTF-8");
+                data += "&" + URLEncoder.encode("password", "UTF-8") + "="
+                        + URLEncoder.encode("TEST_PASSWORD", "UTF-8");
+                data += "&" + URLEncoder.encode("email", "UTF-8") + "="
+                        + URLEncoder.encode("TEST_EMAIL", "UTF-8");
+
+                final URL myUrl = new URL("http://68.181.52.11:8080/trojanow-web/ProfileService");
+
+                URLConnection myConnection = myUrl.openConnection();
+
+                myConnection.setDoOutput(true);
+                myConnection.setDoInput(true);
+                OutputStreamWriter wr = new OutputStreamWriter(myConnection.getOutputStream());
+                wr.write(data);
+                wr.flush();
+                wr.close();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
     }
 /*
     private class HttpRegisterPost extends AsyncTask<String, String, String> {
