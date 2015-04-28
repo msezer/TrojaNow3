@@ -7,8 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-
-public class Environment extends ActionBarActivity {
+public class Environment extends ActionBarActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +39,6 @@ public class Environment extends ActionBarActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

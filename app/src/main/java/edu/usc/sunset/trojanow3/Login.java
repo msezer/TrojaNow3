@@ -1,35 +1,58 @@
 package edu.usc.sunset.trojanow3;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Intent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
+
 
 public class Login extends ActionBarActivity {
 
-    EditText emailFunc;
+    public static EditText email_login;
+    public static EditText password_login;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        emailFunc = (EditText) findViewById(R.id.login_email);
+        email_login = (EditText) findViewById(R.id.login_email);
+        password_login = (EditText) findViewById(R.id.login_password);
     }
 
     // Login Successful, to main page
     public void onClickLoginProcess(View view) {
+        /*
+        // login user
+        new HttpLoginPost().execute("test");
+
+        // Show Toast Message
+        Context context = getApplicationContext();
+        CharSequence text = "Logging you in ...";
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.show();
+        */
+
+        // link to the Main page
         Intent i = new Intent(this, Main.class);
+        i.putExtra("KEY", "User Details");
         startActivity(i);
     }
 
@@ -66,64 +89,67 @@ public class Login extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class CallAPI extends AsyncTask<String, String, String> {
+    private static class HttpLoginPost extends AsyncTask<String, String, String> {
 
-        private String convertInputStreamToString(InputStream inputStream) throws IOException {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            String line = "";
-            String result = "";
-            while ((line = bufferedReader.readLine()) != null)
-                result += line;
-            inputStream.close();
-            return result;
+        private static String toString(final InputStream pInputStream) throws IOException {
+
+            final StringBuilder myStringBuilder = new StringBuilder();
+
+            final byte[] myBuffer = new byte[1024];
+
+            int myNumberOfBytesRead = pInputStream.read(myBuffer);
+
+            while (myNumberOfBytesRead != -1) {
+                myStringBuilder.append(new String(myBuffer).substring(0, myNumberOfBytesRead));
+                myNumberOfBytesRead = pInputStream.read(myBuffer);
+            }
+
+            return myStringBuilder.toString();
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected String doInBackground(String... strings) {
 
-            String urlString = params[0]; // URL to call
-            InputStream inputStream = null;
-            String resultToDisplay = "";
-
-            // HTTP Get
             try {
-                URL url = new URL(urlString);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                inputStream = new BufferedInputStream(urlConnection.getInputStream());
-                resultToDisplay = convertInputStreamToString(inputStream);
+                String email;
+                String password;
 
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                return e.getMessage();
+                email = email_login.getText().toString();
+                password = password_login.getText().toString();
+
+                // Need to be checked for the order
+                String data = URLEncoder.encode("email", "UTF-8") + "="
+                        + URLEncoder.encode(email, "UTF-8");
+                data += "&" + URLEncoder.encode("password", "UTF-8") + "="
+                        + URLEncoder.encode(password, "UTF-8");
+
+                // Need to be checked for address change
+                final URL myUrl = new URL("http://192.168.0.7:8080/trojanow-web/ProfileService");
+
+                HttpURLConnection myConnection = (HttpURLConnection) myUrl.openConnection();
+
+                myConnection.setRequestMethod("POST");
+
+                myConnection.setDoOutput(true);
+                myConnection.setDoInput(true);
+                OutputStreamWriter wr = new OutputStreamWriter(myConnection.getOutputStream());
+                wr.write(data);
+                wr.flush();
+                wr.close();
+
+                myConnection.connect();
+                myConnection.getInputStream();
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            return resultToDisplay;
+            return null;
         }
+    }
 
-        protected void onPostExecute(String result) {
-            //Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
-            //Intent intent = new Intent(this, ResultActivity.class);
-            //intent.putExtra(EXTRA_MESSAGE, result);
-            //startActivity(intent);
 
-            //emailFunc.setText(result);
-        }
-
-    } // end CallAPI
-
-    // verifyEmail method should be called after login process
-    //public void verifyEmail(View view) {
-        //EditText emailEditText = (EditText) findViewById(R.id.login_email);
-        //String email = emailEditText.getText().toString();
-        //EditText passwordEditText = (EditText) findViewById(R.id.login_password);
-        //String password = emailEditText.getText().toString();
-
-        //if (email != null && !email.isEmpty() && password != null && !password.isEmpty()) {
-            //String urlString = "http://hmkcode.com/examples/index.php";
-            /*urlString = apiURL + "LicenseInfo.RegisteredUser.UserID=" + strikeIronUserName
-                    + "&LicenseInfo.RegisteredUser.Password=" + strikeIronPassword + "&VerifyEmail.Email="
-                    + email + "&VerifyEmail.Timeout=30";
-            */
-            //new CallAPI().execute(urlString);
-        //}
-    //}
 }

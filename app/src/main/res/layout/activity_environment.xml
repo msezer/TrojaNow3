@@ -20,46 +20,52 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Location"
-        android:id="@+id/checkBox"
-        android:layout_marginTop="41dp"
+        android:id="@+id/checkBoxLoc"
+        android:layout_marginTop="23dp"
+        android:layout_marginLeft="46dp"
+        android:layout_marginStart="46dp"
+        android:checked="true"
         android:layout_below="@+id/text_environment"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="36dp"
-        android:layout_marginStart="36dp"
-        android:checked="true" />
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:id="@+id/env_Location"
+        android:layout_below="@+id/checkBoxLoc"
+        android:layout_alignLeft="@+id/checkBoxLoc"
+        android:layout_alignStart="@+id/checkBoxLoc" />
 
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Weather"
-        android:id="@+id/checkBox2"
+        android:id="@+id/checkBoxWeather"
         android:layout_centerVertical="true"
-        android:layout_alignLeft="@+id/checkBox"
-        android:layout_alignStart="@+id/checkBox"
+        android:layout_alignLeft="@+id/checkBoxLoc"
+        android:layout_alignStart="@+id/checkBoxLoc"
         android:checked="false" />
 
-    <CheckBox
-        android:layout_width="wrap_content"
+    <EditText
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Contact"
-        android:id="@+id/checkBox3"
-        android:layout_below="@+id/checkBox2"
-        android:layout_alignLeft="@+id/checkBox2"
-        android:layout_alignStart="@+id/checkBox2"
-        android:layout_marginTop="37dp"
-        android:checked="false" />
+        android:singleLine="true"
+        android:id="@+id/env_Weather"
+        android:layout_below="@+id/checkBoxWeather"
+        android:layout_alignLeft="@+id/checkBoxWeather"
+        android:layout_alignStart="@+id/checkBoxWeather" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/button_env_share_r"
         android:id="@+id/button_env_share"
-        android:layout_below="@+id/checkBox3"
-        android:layout_toRightOf="@+id/checkBox"
-        android:layout_toEndOf="@+id/checkBox"
-        android:layout_marginLeft="100dp"
-        android:layout_marginStart="45dp"
-        android:layout_marginTop="30dp"
-        android:onClick="onClickShare"/>
+        android:onClick="onClickShare"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/text_environment"
+        android:layout_alignStart="@+id/text_environment"
+        android:layout_marginBottom="69dp" />
+
 </RelativeLayout>
