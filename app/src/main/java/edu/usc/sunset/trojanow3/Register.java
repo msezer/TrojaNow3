@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -111,9 +112,11 @@ public class Register extends ActionBarActivity {
                 data += "&" + URLEncoder.encode("email", "UTF-8") + "="
                         + URLEncoder.encode("TEST_EMAIL", "UTF-8");
 
-                final URL myUrl = new URL("http://68.181.52.11:8080/trojanow-web/ProfileService");
+                final URL myUrl = new URL("http://172.20.10.4:8080/trojanweb/ProfileService");
 
-                URLConnection myConnection = myUrl.openConnection();
+                HttpURLConnection myConnection = (HttpURLConnection)myUrl.openConnection();
+
+                myConnection.setRequestMethod("POST");
 
                 myConnection.setDoOutput(true);
                 myConnection.setDoInput(true);
@@ -121,6 +124,10 @@ public class Register extends ActionBarActivity {
                 wr.write(data);
                 wr.flush();
                 wr.close();
+
+                myConnection.connect();
+
+                myConnection.getInputStream();
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             } catch (MalformedURLException e) {
