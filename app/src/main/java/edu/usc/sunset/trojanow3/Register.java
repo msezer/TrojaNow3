@@ -2,8 +2,11 @@ package edu.usc.sunset.trojanow3;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,6 +15,8 @@ import android.widget.EditText;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -20,6 +25,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Properties;
 
 public class Register extends ActionBarActivity {
 
@@ -29,6 +35,12 @@ public class Register extends ActionBarActivity {
     public static EditText email_register;
     public static EditText password_register;
 
+    public static String serverAddress;
+    public static String serverPort;
+    public static Resources resources;
+    public static AssetManager assetManager;
+    public static InputStream inputStream;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +49,22 @@ public class Register extends ActionBarActivity {
         fullname_register = (EditText) findViewById(R.id.reg_fullname);
         email_register = (EditText) findViewById(R.id.reg_email);
         password_register = (EditText) findViewById(R.id.reg_password);
+
+        resources = this.getResources();
+        assetManager = resources.getAssets();
+
+        try {
+            inputStream = assetManager.open("local.properties");
+            Properties properties = new Properties();
+            properties.load(inputStream);
+            Log.w("PROPERTIES_LOG_", "The properties are now loaded");
+            serverAddress = properties.getProperty("proxyHost");
+            serverPort = properties.getProperty("proxyPort");
+            Log.w("PROPERTIES_LOG_", serverAddress + ":" + serverPort);
+        } catch (IOException e) {
+            System.err.println("Failed to open microlog property file");
+            e.printStackTrace();
+        }
     }
 
     // Registration process and link to the main page
@@ -90,17 +118,13 @@ public class Register extends ActionBarActivity {
         private static String toString(final InputStream pInputStream) throws IOException {
 
             final StringBuilder myStringBuilder = new StringBuilder();
-
             final byte[] myBuffer = new byte[1024];
-
             int myNumberOfBytesRead = pInputStream.read(myBuffer);
 
             while (myNumberOfBytesRead != -1) {
                 myStringBuilder.append(new String(myBuffer).substring(0, myNumberOfBytesRead));
-
                 myNumberOfBytesRead = pInputStream.read(myBuffer);
             }
-
             return myStringBuilder.toString();
         }
 
@@ -123,7 +147,7 @@ public class Register extends ActionBarActivity {
                 data += "&" + URLEncoder.encode("email", "UTF-8") + "="
                         + URLEncoder.encode(email, "UTF-8");
 
-                final URL myUrl = new URL("http://192.168.0.7:8080/trojanow-web/ProfileService");
+                final URL myUrl = new URL("http://" + serverAddress + ":" + serverPort + "/trojanow-web/ProfileService");
 
                 HttpURLConnection myConnection = (HttpURLConnection) myUrl.openConnection();
 
