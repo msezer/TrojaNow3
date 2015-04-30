@@ -39,5 +39,6 @@
     <string name="title_activity_register">Register</string>
     <string name="title_activity_deneme">Deneme</string>
     <string name="title_activity_show_page">ShowPage</string>
+    <string name="tweetTextView">Medium Text</string>
 
 </resources>
