@@ -19,7 +19,7 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/editText4"
+        android:id="@+id/tweet_msg"
         android:layout_marginTop="34dp"
         android:layout_below="@+id/textView3"
         android:layout_centerHorizontal="true"
@@ -32,9 +32,9 @@
         android:layout_height="wrap_content"
         android:src="@android:drawable/ic_menu_mapmode"
         android:contentDescription="@string/button_addlocation_r"
-        android:layout_below="@+id/editText4"
-        android:layout_alignRight="@+id/editText4"
-        android:layout_alignEnd="@+id/editText4"
+        android:layout_below="@+id/tweet_msg"
+        android:layout_alignRight="@+id/tweet_msg"
+        android:layout_alignEnd="@+id/tweet_msg"
         android:layout_marginTop="36dp"
         android:onClick="onClickEnvironment"/>
 

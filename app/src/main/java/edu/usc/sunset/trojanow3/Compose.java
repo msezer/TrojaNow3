@@ -1,15 +1,23 @@
 package edu.usc.sunset.trojanow3;
 
 import android.content.Intent;
+import android.content.res.AssetManager;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.util.Log;
+import android.widget.EditText;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Properties;
 
 /*
 * MEHMET SEZER, USC CSCI 578, HW3
@@ -71,6 +79,9 @@ public class Compose extends ActionBarActivity {
 
     // Used in order to get back to the main class
     public void onClickSendMessage(View view){
+
+        this.new HttpSendPost().execute();
+
         Intent i = new Intent(this, Main.class);
         startActivity(i);
     }
@@ -140,5 +151,51 @@ public class Compose extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private class HttpSendPost extends AsyncTask<String, String, String>{
+        @Override
+        protected String doInBackground(String... strings) {
+            final String myUserId = "7";
+            final String myMessage = ((EditText) findViewById(R.id.tweet_msg)).getText().toString();
 
+            // Need to be checked for the order
+            String data = null;
+            try {
+                data = URLEncoder.encode("userid", "UTF-8") + "=" +
+                        URLEncoder.encode(myUserId, "UTF-8");
+                data += "&" + URLEncoder.encode("message", "UTF-8") + "=" +
+                        URLEncoder.encode(myMessage, "UTF-8");
+
+                final AssetManager assetManager = Compose.this.getResources().getAssets();
+
+
+                final InputStream inputStream = assetManager.open("local.properties");
+                Properties properties = new Properties();
+                properties.load(inputStream);
+                Log.w("PROPERTIES_LOG_", "The properties are now loaded");
+                String serverAddress = properties.getProperty("proxyHost");
+                String serverPort = properties.getProperty("proxyPort");
+                Log.w("PROPERTIES_LOG_", serverAddress + ":" + serverPort);
+
+                final URL myUrl = new URL("http://" + serverAddress + ":" + serverPort + "/trojanow-web/TweetService");
+
+                HttpURLConnection myConnection = (HttpURLConnection) myUrl.openConnection();
+
+                myConnection.setRequestMethod("POST");
+
+                myConnection.setDoOutput(true);
+                myConnection.setDoInput(true);
+                OutputStreamWriter wr = new OutputStreamWriter(myConnection.getOutputStream());
+                wr.write(data);
+                wr.flush();
+                wr.close();
+
+                myConnection.connect();
+                myConnection.getInputStream();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+    }
 }
