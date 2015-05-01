@@ -67,7 +67,34 @@ public class Login extends ActionBarActivity {
     // Login Successful, to main page
     public void onClickLoginProcess(View view) {
         // login user
-        new HttpLoginPost().execute("");
+
+        Context context = getApplicationContext();
+        CharSequence text;
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast;
+
+        if (email_login.getText().toString().equals("")) {
+            Log.w("ONPOST.LOGIN : ", "FIELDS EMPTY, FAIL");
+            password_login.setText("");
+
+            // Show Toast
+            text = "Please enter your email";
+            toast = Toast.makeText(context, text, duration);
+            toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+            toast.show();
+        } else if (password_login.getText().toString().equals("")) {
+            Log.w("ONPOST.LOGIN : ", "FIELDS EMPTY, FAIL");
+            password_login.setText("");
+
+            // Show Toast
+            text = "Please enter your password.";
+            toast = Toast.makeText(context, text, duration);
+            toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+            toast.show();
+
+        } else {
+            new HttpLoginPost().execute("");
+        }
     }
 
     // To reset password page
@@ -160,17 +187,20 @@ public class Login extends ActionBarActivity {
             }
             return myUserId;
         }
+
         protected void onPostExecute(String id) {
 
             long user_id = Long.parseLong(id);
 
-            Context context = getApplicationContext();;
+            Context context = getApplicationContext();
             CharSequence text;
-            int duration = Toast.LENGTH_SHORT;;
+            int duration = Toast.LENGTH_SHORT;
             Toast toast;
 
-            if (user_id == -1 || user_id == 0) {
-                Log.w("ONPOST.LOGIN : ", "AUTHENTICATION FAIL");
+            if (user_id == (-1) || user_id == 0) {
+                Log.w("ONPOST.LOGIN1 : ", "AUTHENTICATION FAIL");
+                Log.w("ONPOST.LOGIN2 : ", email_login.getText().toString());
+                Log.w("ONPOST.LOGIN3 : ", password_login.getText().toString());
                 password_login.setText("");
 
                 // Show Toast
@@ -189,6 +219,8 @@ public class Login extends ActionBarActivity {
 
                 // Launch Main Page Screen
                 Intent mainpage = new Intent(getApplicationContext(), Main.class);
+
+                GlobalVariables.getInstance().setUserId(id);
 
                 // Close all views before launching Main Page
                 mainpage.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
