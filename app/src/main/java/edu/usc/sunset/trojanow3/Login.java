@@ -198,9 +198,7 @@ public class Login extends ActionBarActivity {
             Toast toast;
 
             if (user_id == (-1) || user_id == 0) {
-                Log.w("ONPOST.LOGIN1 : ", "AUTHENTICATION FAIL");
-                Log.w("ONPOST.LOGIN2 : ", email_login.getText().toString());
-                Log.w("ONPOST.LOGIN3 : ", password_login.getText().toString());
+                Log.w("ONPOST.LOGIN : ", "AUTHENTICATION FAIL");
                 password_login.setText("");
 
                 // Show Toast
@@ -220,6 +218,7 @@ public class Login extends ActionBarActivity {
                 // Launch Main Page Screen
                 Intent mainpage = new Intent(getApplicationContext(), Main.class);
 
+                // Set the global userID
                 GlobalVariables.getInstance().setUserId(id);
 
                 // Close all views before launching Main Page
