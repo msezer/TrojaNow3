@@ -1,52 +1,46 @@
 package edu.usc.sunset.trojanow3;
 
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import android.content.Intent;
-import android.view.TextureView;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import javax.xml.transform.Result;
 
 public class Main extends ActionBarActivity {
 
-    public static TextView tweetText;
+    private ListView mListView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tweetText = (TextView) findViewById(R.id.main_tweet_textview);
-        tweetText.setMovementMethod(new ScrollingMovementMethod());
-
-        String dummy_tweets = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit." +
-        "Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis" +
-        "parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu," +
-        "pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet" +
-        "nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo." +
-        "Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus" +
-        "elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu," +
-        "consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a," +
-        "tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet." +
-        "Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui." +
-        "Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero," +
-        "sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar," +
-        "hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut" +
-        "libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus" +
-        "tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna." +
-        "Sed consequat, leo eget bibendum sodales, augue velit cursus nunc, quis";
-
-        tweetText.setText(dummy_tweets);
-
-
+        this.new GetTweets().execute();
     }
 
     // Link to the compose activity
@@ -107,4 +101,110 @@ public class Main extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    private class GetTweets extends AsyncTask<String, String, String>{
+
+        private String toString(final InputStream pInputStream) throws IOException {
+
+            final StringBuilder myStringBuilder = new StringBuilder();
+            final byte[] myBuffer = new byte[1024];
+            int myNumberOfBytesRead = pInputStream.read(myBuffer);
+
+            while (myNumberOfBytesRead != -1) {
+                myStringBuilder.append(new String(myBuffer).substring(0, myNumberOfBytesRead));
+                myNumberOfBytesRead = pInputStream.read(myBuffer);
+            }
+            return myStringBuilder.toString();
+        }
+
+        private List<String> mList = new ArrayList<String>();
+        private ArrayAdapter<String> mArrayAdapter;
+
+        @Override
+        protected String doInBackground(String... strings) {
+            mListView = (ListView) findViewById(R.id.tweetslist);
+            try {
+                final AssetManager assetManager = Main.this.getResources().getAssets();
+
+                final InputStream inputStream = assetManager.open("local.properties");
+                Properties properties = new Properties();
+                properties.load(inputStream);
+                Log.w("PROPERTIES_LOG_", "The properties are now loaded");
+                String serverAddress = properties.getProperty("proxyHost");
+                String serverPort = properties.getProperty("proxyPort");
+                Log.w("PROPERTIES_LOG_", serverAddress + ":" + serverPort);
+
+                final URL myUrl = new URL("http://" + serverAddress + ":" + serverPort + "/trojanow-web/TweetService");
+
+
+                HttpURLConnection myConnection = (HttpURLConnection) myUrl.openConnection();
+                myConnection.setRequestMethod("GET");
+
+                myConnection.setDoOutput(false);
+                myConnection.setDoInput(true);
+
+                myConnection.connect();
+                final InputStream myStream = myConnection.getInputStream();
+
+                final String myString = this.toString(myStream);
+
+                JSONArray myJsonArray = new JSONArray(myString);
+
+                for (int i = 0 ; i < myJsonArray.length(); i++){
+                    final JSONObject myObject = myJsonArray.getJSONObject(i);
+
+                    mList.add(myObject.getString("message"));
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result){
+            final ArrayAdapter<String> myArrayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, mList);
+            Main.this.mListView.setAdapter(myArrayAdapter);
+            Main.this.mListView.deferNotifyDataSetChanged();
+        }
+    }
+/*    private static class CustomListAdapter extends ArrayAdapter<String>{
+
+        private Context mContext;
+        private int id;
+        private List <String>items;
+
+        public CustomListAdapter(Context context, int resource, int textViewResourceId, List<String> objects) {
+            super(context, resource, textViewResourceId, objects);
+
+            mContext = context;
+            id = textViewResourceId;
+            items = objects ;
+        }
+
+        @Override
+        public View getView(int position, View v, ViewGroup parent)
+        {
+            View mView = v ;
+            if(mView == null){
+                LayoutInflater vi = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                mView = vi.inflate(id, null);
+            }
+
+            TextView text = (TextView) mView.findViewById(R.id.textView);
+
+            if(items.get(position) != null )
+            {
+                text.setTextColor(Color.WHITE);
+                text.setText(items.get(position));
+                text.setBackgroundColor(Color.RED);
+                int color = Color.argb( 200, 255, 64, 64 );
+                text.setBackgroundColor( color );
+
+            }
+
+            return mView;
+        }
+    }*/
 }

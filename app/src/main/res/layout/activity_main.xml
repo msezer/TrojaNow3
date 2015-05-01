@@ -34,18 +34,9 @@
         android:contentDescription="button_Search"
         android:onClick="onClickSearch"
         android:layout_alignTop="@+id/button_compose"
-        android:layout_toRightOf="@+id/main_topTextview"
-        android:layout_toEndOf="@+id/main_topTextview" />
+        android:layout_centerHorizontal="true" />
 
     <!-- MESSAGES TEXT -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Messages"
-        android:id="@+id/main_topTextview"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
 
     <!-- SIGNOUT BUTTON -->
     <ImageButton
@@ -71,20 +62,27 @@
         android:onClick="onClickProfile"
         android:contentDescription="button_profile_main" />
 
-    <TextView
-        android:maxLines = "16"
-        android:scrollbars = "vertical"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Medium Text"
-        android:id="@+id/main_tweet_textview"
-        android:layout_below="@+id/main_topTextview"
-        android:layout_marginTop="24dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_above="@+id/button_compose" />
+        android:background="#ff0c0c18">
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tweettext"
+            android:textSize="20sp" android:paddingTop="10dip" android:paddingBottom="10dip"/>
+    </LinearLayout>
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tweetslist"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/button_compose"
+        android:background="#ff1d1d3b" />
+
+
 
 </RelativeLayout>
