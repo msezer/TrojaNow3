@@ -190,6 +190,8 @@ public class Login extends ActionBarActivity {
                 // Launch Main Page Screen
                 Intent mainpage = new Intent(getApplicationContext(), Main.class);
 
+                GlobalVariables.getInstance().setUserId(id);
+
                 // Close all views before launching Main Page
                 mainpage.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(mainpage);
