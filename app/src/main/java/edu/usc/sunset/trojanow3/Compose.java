@@ -19,16 +19,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Properties;
 
-/*
-* MEHMET SEZER, USC CSCI 578, HW3
-* This class is used in order to provide an activity for the message posting/composing page.
-* This class will be getting environmental information from the Environment class which will
-* perform the main dataflow from the phone.
-* Additionally, the functions; likeMessage(), isAnonymous(), postMessage(), rePostMessage(),
-* notificationViewer(), insertPhoto(), insertContacts() will be responsible of the
-* operations regarding their title. All of the operations which require database connection
-* will be handled by the DbHandler class.
-* */
+
 public class Compose extends ActionBarActivity {
 
     @Override

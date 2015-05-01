@@ -38,8 +38,6 @@ public class Login extends ActionBarActivity {
     public static AssetManager assetManager;
     public static InputStream inputStream;
 
-    public static int loginStatus;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +46,7 @@ public class Login extends ActionBarActivity {
         email_login = (EditText) findViewById(R.id.login_email);
         password_login = (EditText) findViewById(R.id.login_password);
 
+        // read properties file
         resources = this.getResources();
         assetManager = resources.getAssets();
 
@@ -55,52 +54,20 @@ public class Login extends ActionBarActivity {
             inputStream = assetManager.open("local.properties");
             Properties properties = new Properties();
             properties.load(inputStream);
-            Log.w("PROPERTIES_LOG_", "The properties are now loaded");
+            Log.w("PROPERTIES_LOG_", "The properties for login are now loaded");
             serverAddress = properties.getProperty("proxyHost");
             serverPort = properties.getProperty("proxyPort");
             Log.w("PROPERTIES_LOG_", serverAddress + ":" + serverPort);
         } catch (IOException e) {
-            System.err.println("Failed to open microlog property file");
+            System.err.println("Failed to open log property file");
             e.printStackTrace();
         }
     }
 
     // Login Successful, to main page
     public void onClickLoginProcess(View view) {
-
-        Context context;
-        CharSequence text;
-        int duration;
-        Toast toast;
-
         // login user
-        new HttpLoginPost().execute("test");
-
-        loginStatus = -1;
-        if (loginStatus == -1) {
-            context = getApplicationContext();
-            text = "An error occured while authenticating the user. Check your email and password...";
-            duration = Toast.LENGTH_SHORT;
-            toast = Toast.makeText(context, text, duration);
-            toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-            toast.show();
-            password_login.setText("");
-        } else {
-            // Show Toast Message
-            context = getApplicationContext();
-            text = "Logging you in ...";
-            duration = Toast.LENGTH_SHORT;
-            toast = Toast.makeText(context, text, duration);
-            toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-            toast.show();
-
-            // link to the Main page
-            Intent i = new Intent(this, Main.class);
-
-            // send the user data to the main class
-            i.putExtra("KEY", loginStatus);
-            startActivity(i);
-        }
+        new HttpLoginPost().execute("");
     }
 
     // To reset password page
@@ -128,7 +95,6 @@ public class Login extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
@@ -136,65 +102,55 @@ public class Login extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private static class HttpLoginPost extends AsyncTask<String, String, String> {
+    //private static
+    class HttpLoginPost extends AsyncTask<String, String, String> {
 
-        private static String toString(final InputStream pInputStream) throws IOException {
-
+        //static
+        private String toString(final InputStream pInputStream) throws IOException {
             final StringBuilder myStringBuilder = new StringBuilder();
-
             final byte[] myBuffer = new byte[1024];
-
             int myNumberOfBytesRead = pInputStream.read(myBuffer);
-
             while (myNumberOfBytesRead != -1) {
                 myStringBuilder.append(new String(myBuffer).substring(0, myNumberOfBytesRead));
                 myNumberOfBytesRead = pInputStream.read(myBuffer);
             }
-
             return myStringBuilder.toString();
         }
 
         @Override
         protected String doInBackground(String... strings) {
-
+            String myUserId = "-1";
             try {
-                String password;
                 String email;
-
-                password = password_login.getText().toString();
+                String password;
                 email = email_login.getText().toString();
+                password = password_login.getText().toString();
 
-                // Need to be checked for the order
                 String data = URLEncoder.encode("email", "UTF-8") + "=" +
                         URLEncoder.encode(email, "UTF-8");
-
                 data += "&" + URLEncoder.encode("password", "UTF-8") + "=" +
                         URLEncoder.encode(password, "UTF-8");
 
-                // Need to be checked for address change
                 final URL myUrl = new URL("http://" + serverAddress + ":" + serverPort + "/trojanow-web/AuthenticateService");
-
                 HttpURLConnection myConnection = (HttpURLConnection) myUrl.openConnection();
-
                 myConnection.setRequestMethod("POST");
-
                 myConnection.setDoOutput(true);
                 myConnection.setDoInput(true);
                 OutputStreamWriter wr = new OutputStreamWriter(myConnection.getOutputStream());
                 wr.write(data);
                 wr.flush();
                 wr.close();
-
                 myConnection.connect();
+
+                final InputStream myInputStream = myConnection.getInputStream();
+                final String myJsonString = toString(myInputStream);
+                try {
+                    final String uID = new JSONObject(myJsonString).getString("userId");
+                    myUserId = uID;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 myConnection.getInputStream();
-
-                //  get the user id
-                //  UNDONE PART
-
-                // JSONObject object = new JSONObject(****What to put here);
-                // String userID = object.getString("userId");
-
-
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             } catch (MalformedURLException e) {
@@ -202,7 +158,45 @@ public class Login extends ActionBarActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return null;
+            return myUserId;
+        }
+        protected void onPostExecute(String id) {
+
+            long user_id = Long.parseLong(id);
+
+            Context context = getApplicationContext();;
+            CharSequence text;
+            int duration = Toast.LENGTH_SHORT;;
+            Toast toast;
+
+            if (user_id == -1 || user_id == 0) {
+                Log.w("ONPOST.LOGIN : ", "AUTHENTICATION FAIL");
+                password_login.setText("");
+
+                // Show Toast
+                text = "An error occured while authenticating the user. Check your email and password.";
+                toast = Toast.makeText(context, text, duration);
+                toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+                toast.show();
+            } else {
+                Log.w("ONPOST.LOGIN.AUTH : ", "SUCCESS");
+
+                // Show Toast
+                text = "Logging you in ...";
+                toast = Toast.makeText(context, text, duration);
+                toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+                toast.show();
+
+                // Launch Main Page Screen
+                Intent mainpage = new Intent(getApplicationContext(), Main.class);
+
+                // Close all views before launching Main Page
+                mainpage.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(mainpage);
+
+                // Close Login Screen
+                finish();
+            }
         }
     }
 }
