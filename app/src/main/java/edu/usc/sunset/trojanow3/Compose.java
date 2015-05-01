@@ -154,7 +154,7 @@ public class Compose extends ActionBarActivity {
     private class HttpSendPost extends AsyncTask<String, String, String>{
         @Override
         protected String doInBackground(String... strings) {
-            final String myUserId = "7";
+            final String myUserId = GlobalVariables.getInstance().getUserId();
             final String myMessage = ((EditText) findViewById(R.id.tweet_msg)).getText().toString();
 
             // Need to be checked for the order
