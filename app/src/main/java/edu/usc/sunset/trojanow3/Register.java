@@ -122,7 +122,7 @@ public class Register extends ActionBarActivity {
 
     class HttpRegisterPost extends AsyncTask<String, String, String> {
 
-        private String toString(final InputStream pInputStream) throws IOException {
+            private String toString(final InputStream pInputStream) throws IOException {
 
             final StringBuilder myStringBuilder = new StringBuilder();
             final byte[] myBuffer = new byte[1024];
@@ -204,6 +204,7 @@ public class Register extends ActionBarActivity {
                 toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
                 toast.show();
             } else {
+                GlobalVariables.getInstance().setUserId(Long.toString(user_id));
                 Log.w("ONPOST.REGISTER.AUTH : ", "SUCCESS");
                 // Show Toast
                 text = "Registering in process...";
