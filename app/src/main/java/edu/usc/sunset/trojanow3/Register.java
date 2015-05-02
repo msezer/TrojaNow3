@@ -15,8 +15,8 @@ import android.widget.EditText;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -70,20 +70,27 @@ public class Register extends ActionBarActivity {
     // Registration process and link to the main page
     public void onClickRegisterProcess(View view) {
         // register the new user
-        new HttpRegisterPost().execute("test");
 
-        // Show Toast Message
         Context context = getApplicationContext();
-        CharSequence text = "Registering in process...";
+        CharSequence text;
         int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-        toast.show();
+        Toast toast;
 
-        // link to the Main page
-        Intent i = new Intent(this, Main.class);
-        i.putExtra("KEY", "User Details");
-        startActivity(i);
+        if (fullname_register.getText().toString().equals("") ||
+                email_register.getText().toString().equals("") ||
+                password_register.getText().toString().equals("")) {
+
+            Log.w("ONPOST.REGISTER : ", "FIELDS EMPTY, FAIL");
+            password_register.setText("");
+
+            // Show Toast
+            text = "Please fill all the fields";
+            toast = Toast.makeText(context, text, duration);
+            toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+            toast.show();
+        } else {
+            new HttpRegisterPost().execute("test");
+        }
     }
 
     // Link to login page
@@ -113,9 +120,9 @@ public class Register extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private static class HttpRegisterPost extends AsyncTask<String, String, String> {
+    class HttpRegisterPost extends AsyncTask<String, String, String> {
 
-        private static String toString(final InputStream pInputStream) throws IOException {
+        private String toString(final InputStream pInputStream) throws IOException {
 
             final StringBuilder myStringBuilder = new StringBuilder();
             final byte[] myBuffer = new byte[1024];
@@ -130,7 +137,7 @@ public class Register extends ActionBarActivity {
 
         @Override
         protected String doInBackground(String... strings) {
-
+            String myUserId = "-1";
             try {
                 String email;
                 String fullname;
@@ -148,19 +155,24 @@ public class Register extends ActionBarActivity {
                         + URLEncoder.encode(email, "UTF-8");
 
                 final URL myUrl = new URL("http://" + serverAddress + ":" + serverPort + "/trojanow-web/ProfileService");
-
                 HttpURLConnection myConnection = (HttpURLConnection) myUrl.openConnection();
-
                 myConnection.setRequestMethod("POST");
-
                 myConnection.setDoOutput(true);
                 myConnection.setDoInput(true);
                 OutputStreamWriter wr = new OutputStreamWriter(myConnection.getOutputStream());
                 wr.write(data);
                 wr.flush();
                 wr.close();
-
                 myConnection.connect();
+
+                final InputStream myInputStream = myConnection.getInputStream();
+                final String myJsonString = toString(myInputStream);
+                try {
+                    final String uID = new JSONObject(myJsonString).getString("userId");
+                    myUserId = uID;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 myConnection.getInputStream();
 
             } catch (UnsupportedEncodingException e) {
@@ -170,7 +182,48 @@ public class Register extends ActionBarActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return null;
+            return myUserId;
+        }
+
+        protected void onPostExecute(String id) {
+
+            long user_id = Long.parseLong(id);
+
+            Context context = getApplicationContext();
+            CharSequence text;
+            int duration = Toast.LENGTH_SHORT;
+            Toast toast;
+
+            if (user_id == (-1) || user_id == 0) {
+                Log.w("ONPOST.REGISTER : ", "AUTHENTICATION FAIL");
+                password_register.setText("");
+
+                // Show Toast
+                text = "An error occured while registering the user. Check your email and password.";
+                toast = Toast.makeText(context, text, duration);
+                toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+                toast.show();
+            } else {
+                Log.w("ONPOST.REGISTER.AUTH : ", "SUCCESS");
+                // Show Toast
+                text = "Registering in process...";
+                toast = Toast.makeText(context, text, duration);
+                toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+                toast.show();
+
+                // Launch Main Page Screen
+                Intent mainpage = new Intent(getApplicationContext(), Main.class);
+
+                // Set the global userID
+                // GlobalVariables.getInstance().setUserId(id);
+
+                // Close all views before launching Main Page
+                mainpage.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(mainpage);
+
+                // Close Register Screen
+                finish();
+            }
         }
     }
 }

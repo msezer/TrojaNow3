@@ -67,7 +67,34 @@ public class Login extends ActionBarActivity {
     // Login Successful, to main page
     public void onClickLoginProcess(View view) {
         // login user
-        new HttpLoginPost().execute("");
+
+        Context context = getApplicationContext();
+        CharSequence text;
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast;
+
+        if (email_login.getText().toString().equals("")) {
+            Log.w("ONPOST.LOGIN : ", "FIELDS EMPTY, FAIL");
+            password_login.setText("");
+
+            // Show Toast
+            text = "Please enter your email";
+            toast = Toast.makeText(context, text, duration);
+            toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+            toast.show();
+        } else if (password_login.getText().toString().equals("")) {
+            Log.w("ONPOST.LOGIN : ", "FIELDS EMPTY, FAIL");
+            password_login.setText("");
+
+            // Show Toast
+            text = "Please enter your password.";
+            toast = Toast.makeText(context, text, duration);
+            toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+            toast.show();
+
+        } else {
+            new HttpLoginPost().execute("");
+        }
     }
 
     // To reset password page
@@ -160,16 +187,17 @@ public class Login extends ActionBarActivity {
             }
             return myUserId;
         }
+
         protected void onPostExecute(String id) {
 
             long user_id = Long.parseLong(id);
 
-            Context context = getApplicationContext();;
+            Context context = getApplicationContext();
             CharSequence text;
-            int duration = Toast.LENGTH_SHORT;;
+            int duration = Toast.LENGTH_SHORT;
             Toast toast;
 
-            if (user_id == -1 || user_id == 0) {
+            if (user_id == (-1) || user_id == 0) {
                 Log.w("ONPOST.LOGIN : ", "AUTHENTICATION FAIL");
                 password_login.setText("");
 
