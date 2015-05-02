@@ -13,7 +13,6 @@ import android.widget.EditText;
 
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -71,7 +70,7 @@ public class Compose extends ActionBarActivity {
     // Used in order to get back to the main class
     public void onClickSendMessage(View view){
 
-        this.new HttpSendPost().execute();
+        this.new CommunicationComponent().execute();
 
         Intent i = new Intent(this, Main.class);
         startActivity(i);
@@ -142,7 +141,7 @@ public class Compose extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class HttpSendPost extends AsyncTask<String, String, String>{
+    private class CommunicationComponent extends AsyncTask<String, String, String>{
         @Override
         protected String doInBackground(String... strings) {
             final String myUserId = GlobalVariables.getInstance().getUserId();

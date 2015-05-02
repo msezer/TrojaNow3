@@ -89,7 +89,7 @@ public class Register extends ActionBarActivity {
             toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
             toast.show();
         } else {
-            new HttpRegisterPost().execute("test");
+            new CommunicationComponent().execute("test");
         }
     }
 
@@ -120,7 +120,7 @@ public class Register extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    class HttpRegisterPost extends AsyncTask<String, String, String> {
+    private  class CommunicationComponent extends AsyncTask<String, String, String> {
 
             private String toString(final InputStream pInputStream) throws IOException {
 

@@ -22,13 +22,10 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import javax.xml.transform.Result;
 
 public class Main extends ActionBarActivity {
 
@@ -40,7 +37,7 @@ public class Main extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.new GetTweets().execute();
+        this.new CommunicationComponent().execute();
     }
 
     // Link to the compose activity
@@ -102,7 +99,7 @@ public class Main extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class GetTweets extends AsyncTask<String, String, String>{
+    private class CommunicationComponent extends AsyncTask<String, String, String>{
 
         private String toString(final InputStream pInputStream) throws IOException {
 

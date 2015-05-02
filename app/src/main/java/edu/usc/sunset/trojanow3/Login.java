@@ -93,7 +93,7 @@ public class Login extends ActionBarActivity {
             toast.show();
 
         } else {
-            new HttpLoginPost().execute("");
+            new CommunicationComponent().execute("");
         }
     }
 
@@ -130,7 +130,7 @@ public class Login extends ActionBarActivity {
     }
 
     //private static
-    class HttpLoginPost extends AsyncTask<String, String, String> {
+    private class CommunicationComponent extends AsyncTask<String, String, String> {
 
         //static
         private String toString(final InputStream pInputStream) throws IOException {
